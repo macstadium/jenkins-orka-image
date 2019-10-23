@@ -27,3 +27,4 @@ git-parameter:0.9.11
 github:1.29.5
 matrix-project:1.14
 ssh-slaves:1.31.0
+greenballs:1.15
