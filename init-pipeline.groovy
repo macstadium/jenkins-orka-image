@@ -1,4 +1,4 @@
-import jenkins.model.Jenkins;
+import jenkins.model.Jenkins
 
 Jenkins.instance.createProjectFromXML("Orka Pipeline", new ByteArrayInputStream("""\
 <?xml version='1.1' encoding='UTF-8'?>
