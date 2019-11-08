@@ -7,21 +7,24 @@ Jenkins.instance.createProjectFromXML("Orka Pipeline", new ByteArrayInputStream(
   <keepDependencies>false</keepDependencies>
   <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps">
     <script>pipeline {
-    agent { label &apos;orka&apos; }
+    agent { label 'orka' }
     stages {
-        stage(&apos;install&apos;) {
+        stage('clone') {
             steps {
-                sh &apos;echo Installing dependencies!&apos;
+                git 'https://github.com/ispasov/swift-game.git'
             }
         }
-        stage(&apos;build&apos;) {
+        stage('build') {
             steps {
-                sh &apos;echo Building on: \$(uname -a)&apos;
+                sh 'xcodebuild -sdk iphonesimulator'
             }
         }
-         stage(&apos;test&apos;) {
+         stage('archive') {
             steps {
-                sh &apos;echo Testing!&apos;
+                dir('build') {
+                    sh 'zip -r simulator-app.zip Release-iphonesimulator/Swift2048.app'
+                    archiveArtifacts 'simulator-app.zip'
+                }
             }
         }
     }
