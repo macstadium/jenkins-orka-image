@@ -3,6 +3,7 @@ import com.cloudbees.plugins.credentials.CredentialsScope
 import com.cloudbees.plugins.credentials.domains.Domain
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl
 import com.cloudbees.plugins.credentials.SystemCredentialsProvider
+import hudson.model.AdministrativeMonitor
 import hudson.model.Node.Mode
 import io.jenkins.plugins.orka.OrkaCloud
 import io.jenkins.plugins.orka.AgentTemplate
@@ -21,4 +22,18 @@ templates.add(template)
 OrkaCloud cloud = new OrkaCloud("Orka Cloud", null, System.getenv()['ORKA_ENDPOINT'], templates)
 
 Jenkins.instance.clouds.add(cloud)
+
+Jenkins.instance.administrativeMonitors.each { x-> 
+    String name = x.getClass().name
+    if (name.contains("SecurityIsOffMonitor") ||
+        name.contains("SecurityIsOffMonitor") ||
+        name.contains("URICheckEncodingMonitor") ||
+        name.contains("UpdateCenter") ||
+        name.contains("UpdateSiteWarningsMonitor") ||
+        name.contains("RootUrlNotSetMonitor") ||
+        name.contains("CSRFAdministrativeMonitor")) {
+        x.disable(true)
+    }
+}
+
 Jenkins.instance.save()
