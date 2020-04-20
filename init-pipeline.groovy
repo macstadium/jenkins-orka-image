@@ -9,22 +9,9 @@ Jenkins.instance.createProjectFromXML("Orka Pipeline", new ByteArrayInputStream(
     <script>pipeline {
     agent { label 'orka' }
     stages {
-        stage('clone') {
+        stage('list files') {
             steps {
-                git 'https://github.com/ispasov/swift-game.git'
-            }
-        }
-        stage('build') {
-            steps {
-                sh 'xcodebuild -sdk iphonesimulator'
-            }
-        }
-         stage('archive') {
-            steps {
-                dir('build') {
-                    sh 'zip -r simulator-app.zip Release-iphonesimulator/Swift2048.app'
-                    archiveArtifacts 'simulator-app.zip'
-                }
+                sh 'ls -la'
             }
         }
     }
