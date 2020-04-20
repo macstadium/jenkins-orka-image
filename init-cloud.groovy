@@ -19,7 +19,7 @@ AgentTemplate template = new AgentTemplate(credentialsId, "orkademo", false, nul
 ArrayList<AgentTemplate> templates = new ArrayList<AgentTemplate>()
 templates.add(template)
 
-OrkaCloud cloud = new OrkaCloud("Orka Cloud", null, System.getenv()['ORKA_ENDPOINT'], templates)
+OrkaCloud cloud = new OrkaCloud("Orka Cloud", null, System.getenv()['ORKA_ENDPOINT'], null, templates)
 
 Jenkins.instance.clouds.add(cloud)
 
