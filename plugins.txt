@@ -1,5 +1,3 @@
-
-
 credentials-binding:latest
 embeddable-build-status:latest
 ssh-agent:latest

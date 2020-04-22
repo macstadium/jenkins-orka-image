@@ -9,17 +9,41 @@ import io.jenkins.plugins.orka.OrkaCloud
 import io.jenkins.plugins.orka.AgentTemplate
 import io.jenkins.plugins.orka.RunOnceCloudRetentionStrategy
 import java.util.ArrayList
+import java.util.Collections
 import jenkins.model.Jenkins
 
-String credentialsId = java.util.UUID.randomUUID().toString()
-Credentials sshCredentials = (Credentials) new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, credentialsId, "VM SSH credentials", "admin", "admin")
+String orkaEndpoint = System.getenv()['ORKA_ENDPOINT'] ?: "http://10.221.188.100";
+
+String orkaUsername = System.getenv()['ORKA_USERNAME'];
+String orkaPassword = System.getenv()['ORKA_PASSWORD'];
+String sshUsername =  System.getenv()['SSH_USERNAME'] ?: "admin"
+String sshPassword =  System.getenv()['SSH_PASSWORD'] ?: "admin"
+
+String vmConfigName = System.getenv()['VM_CONFIG_NAME'] ?: "orka-jenkins"
+String vmBaseImage = System.getenv()['VM_BASE_IMAGE'];
+String vmCpuCountString = System.getenv()['VM_CPU_COUNT'] ?: 3
+int vmCpuCount = Integer.parseInt(vmCpuCountString);
+String agentLabel = System.getenv()['AGENT_LABEL'] ?: "orka"
+
+String remoteFs = System.getenv()['REMOTE_FS_ROOT'] ?: "/Users/admin"
+
+String sshUserCredentialsId = java.util.UUID.randomUUID().toString()
+String orkaUserCredentialsId = java.util.UUID.randomUUID().toString()
+
+Credentials sshCredentials = (Credentials) new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, sshUserCredentialsId, "VM SSH credentials", sshUsername, sshPassword)
 SystemCredentialsProvider.getInstance().getStore().addCredentials(Domain.global(), sshCredentials)
 
-AgentTemplate template = new AgentTemplate(credentialsId, "orkademo", false, null, null, 0, 1, "/Users/admin", Mode.NORMAL, "orka", new RunOnceCloudRetentionStrategy(5), null)
+Credentials orkaCredentials = (Credentials) new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, orkaUserCredentialsId, "Orka credentials", orkaUsername, orkaPassword)
+SystemCredentialsProvider.getInstance().getStore().addCredentials(Domain.global(), orkaCredentials)
+
+AgentTemplate template = new AgentTemplate(sshUserCredentialsId, null, true, vmConfigName, 
+    vmBaseImage, vmCpuCount, 1, remoteFs, 
+    Mode.NORMAL, agentLabel, new RunOnceCloudRetentionStrategy(5), Collections.emptyList());
+
 ArrayList<AgentTemplate> templates = new ArrayList<AgentTemplate>()
 templates.add(template)
 
-OrkaCloud cloud = new OrkaCloud("Orka Cloud", null, System.getenv()['ORKA_ENDPOINT'], null, templates)
+OrkaCloud cloud = new OrkaCloud("Orka Cloud", orkaUserCredentialsId, orkaEndpoint, null, templates)
 
 Jenkins.instance.clouds.add(cloud)
 
